@@ -3,7 +3,6 @@ const fastify = require('fastify')({
 })
 const dotenv = require('dotenv');
 const path = require('path');
-//const csrf = require('csurf');
 const createError = require('http-errors');
 const authMiddleWare = require('./middleware/auth');
 const fastify_cors = require('fastify-cors');
@@ -16,20 +15,13 @@ dotenv.config({
 
 async function load() {
   
-  // if you want to sign cookies:
-  //fastify.register(require('fastify-cookie'), { secret: process.env.CSRF_SECRET }); // See following section to ensure security
-  //fastify.register(require('fastify-csrf'), { cookieOpts: { signed: true } });
-
-
   await fastify.register(require('fastify-cookie'));
-  await fastify.register(require('fastify-csrf'), {ignoreMethods:['GET', 'HEAD', 'OPTIONS']});
+  await fastify.register(require('fastify-csrf'));
   // protect the entire plugin
-  fastify.addHook('onRequest', fastify.csrfProtection);
-
-  //middleware
-  /*app.use(express.json()); 
-  app.use(express.urlencoded({ extended: false }));
-  app.use(cookieParser());*/
+  //fastify.addHook('onRequest', fastify.csrfProtection);
+  fastify.addHook('preHandler', (req, reply, done) => {
+    authMiddleWare.authenticate(req, reply, done);
+  });
 
   //csrf middle ware
   //var csrfProtection = csrf({ cookie: true });
@@ -69,13 +61,14 @@ async function load() {
 
   //app.use('/user', authMiddleWare.authenticate, userRoute); //user routes
 
-  fastify.register(require('./routes/user_routes'));
+  fastify.register(require('./routes/user_routes', {
+    'onRequest': fastify.csrfProtection
+  }));
 
   //routes
   fastify.get('/', async (req, reply) => {
     const token = await reply.generateCsrf();
     reply.setCookie('XSRF-TOKEN', token, { httpOnly: false });
-    //res.cookie('XSRF-TOKEN', token, { httpOnly: false });
     reply.send({"status": "Success", "message": "Hello world"});
   });
 
@@ -88,9 +81,15 @@ async function load() {
       return next(createError(404));
     } 
   });*/
-
-
-
+  fastify.setErrorHandler(function (error, request, reply) {
+    // Log error
+    this.log.error(error)
+    if(error.name === "ForbiddenError") {
+      res.status(403).send({ code: 403, message: err.message });
+    }
+    reply.status(409).send({ code: 409, message: err.message })
+  })
+  
   fastify.listen(port, function (err, address) {
     if (err) {
       fastify.log.error(err)

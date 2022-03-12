@@ -39,7 +39,7 @@ async function authenticate(req, res, next) {
       const userDecodedResult = tokenVerifyRes.decoded.sub;
 
       if(!tokenVerifyRes.valid || tokenVerifyRes.expired || !userDecodedResult) {
-        res.status(401).json(loginFailedJson);  
+        res.status(401).send(loginFailedJson);  
       } else {
         const userSession = util.getActiveUserSession(userDecodedResult.email);
         /**
@@ -64,7 +64,7 @@ async function authenticate(req, res, next) {
     }    
   } catch (error) {
     console.error(error);
-    res.status(401).json(loginFailedJson)
+    res.status(401).send(loginFailedJson)
   }
 }
 
