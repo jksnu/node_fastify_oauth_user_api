@@ -1,4 +1,4 @@
-const jwt = require('fastify-jwt');
+const jwt = require('jsonwebtoken');
 
 const verifyOptions = {
   expiresIn:  "10min",
