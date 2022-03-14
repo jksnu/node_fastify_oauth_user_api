@@ -1,7 +1,8 @@
-const fastify = require('fastify');
+//const fastify = require('fastify');
 const utils = require('../util/utils');
 
 async function router (fastify, options) {
+  console.log(options);
   fastify.post('/user/registerUser', (req, reply) => {  
     const username = req.body.username;
     const password = req.body.password;

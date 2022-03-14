@@ -3,7 +3,6 @@ const fastify = require('fastify')({
 })
 const dotenv = require('dotenv');
 const path = require('path');
-const createError = require('http-errors');
 const authMiddleWare = require('./middleware/auth');
 const fastify_cors = require('fastify-cors');
 const helmet = require('fastify-helmet');
@@ -92,12 +91,12 @@ async function load() {
     // Log error
     this.log.error(error)
     if(error.name === "ForbiddenError") {
-      res.status(403).send({ code: 403, message: err.message });
+      reply.status(403).send({ code: 403, message: error.message });
     }
-    reply.status(409).send({ code: 409, message: err.message })
+    reply.status(409).send({ code: 409, message: error.message })
   })
   
-  fastify.listen(port, function (err, address) {
+  fastify.listen(port, function (err) {
     if (err) {
       fastify.log.error(err)
       process.exit(1)
