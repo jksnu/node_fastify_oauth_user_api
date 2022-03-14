@@ -6,6 +6,7 @@ const path = require('path');
 const createError = require('http-errors');
 const authMiddleWare = require('./middleware/auth');
 const fastify_cors = require('fastify-cors');
+const helmet = require('fastify-helmet');
 
 const port = 8000;
 
@@ -17,11 +18,8 @@ async function load() {
   
   await fastify.register(require('fastify-cookie'));
   await fastify.register(require('fastify-csrf'));
-  // protect the entire plugin
-  //fastify.addHook('onRequest', fastify.csrfProtection);
-  fastify.addHook('preHandler', (req, reply, done) => {
-    authMiddleWare.authenticate(req, reply, done);
-  });
+  //registering helmet 
+  await fastify.register(helmet, { global: true });  
 
   //csrf middle ware
   //var csrfProtection = csrf({ cookie: true });
@@ -59,11 +57,20 @@ async function load() {
   }
   fastify.register(fastify_cors, corsOptions);
 
-  //app.use('/user', authMiddleWare.authenticate, userRoute); //user routes
-
   fastify.register(require('./routes/user_routes', {
     'onRequest': fastify.csrfProtection
   }));
+
+  fastify.addHook('preHandler', (req, reply, done) => {
+    authMiddleWare.authenticate(req, reply, done);
+  });
+
+  //code for removing x-powered-by header from response header
+  const HEADER = 'X-Powered-By';
+  fastify.addHook('onSend', (request, reply, payload, done) => {
+		reply.header(HEADER, "");
+		done();
+	});
 
   //routes
   fastify.get('/', async (req, reply) => {
