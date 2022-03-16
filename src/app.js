@@ -13,7 +13,7 @@ dotenv.config({
   path: path.join(__dirname, '../.env')
 });
 
-async function load() {
+async function load(fastify) {
   
   await fastify.register(require('fastify-cookie'));
   await fastify.register(require('fastify-csrf'));
@@ -58,7 +58,9 @@ async function load() {
 
   fastify.register(require('./routes/user_routes', {
     'onRequest': fastify.csrfProtection
-  }));
+  }), {    
+    prefix: '/user',
+  });
 
   fastify.addHook('preHandler', (req, reply, done) => {
     authMiddleWare.authenticate(req, reply, done);
@@ -104,6 +106,6 @@ async function load() {
   })
 }
 
-load();
+load(fastify);
 
 

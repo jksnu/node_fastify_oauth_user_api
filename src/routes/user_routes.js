@@ -3,18 +3,18 @@ const utils = require('../util/utils');
 
 async function router (fastify, options) {
   console.log(options);
-  fastify.post('/user/registerUser', (req, reply) => {  
+  fastify.post('/registerUser', (req, reply) => {  
     const username = req.body.username;
     const password = req.body.password;
     utils.addUser(username, password);
     reply.send({"message": 'User is registered successfully'});
   });
   
-  fastify.get('/user/users', (req, reply) => {
+  fastify.get('/users', (req, reply) => {
     reply.send(utils.getUsers());
   });
   
-  fastify.delete('/user/delete/:username', (req, reply) => {
+  fastify.delete('/delete/:username', (req, reply) => {
     const username = req.params.username;
     const user = utils.getUser(username);
     utils.deleteUser(username);
@@ -24,14 +24,14 @@ async function router (fastify, options) {
     reply.send({"message":"User is deleted successfully"});
   });
   
-  fastify.post('/user/login', (req, reply) => {
+  fastify.post('/login', (req, reply) => {
     const username = req.body.username;
     const password = req.body.password;
     utils.login(username, password);
     reply.send({"message": "User has logged in successfully"});
   });
   
-  fastify.post('/user/logout', (req, reply) => {
+  fastify.post('/logout', (req, reply) => {
     const username = req.body.username;
     utils.logout(username);
     utils.deactivateSession(req.authUser.id);
