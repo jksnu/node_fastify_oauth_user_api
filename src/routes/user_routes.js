@@ -1,41 +1,57 @@
-//const fastify = require('fastify');
-const utils = require('../util/utils');
+'use strict';
+
+const { 
+  registerUser, 
+  users, 
+  deleteUser,
+  login, 
+  logout
+} = require('../controller/user_ctrl');
+
+const {
+  registerUserSchema, 
+  UsersSchema,
+  deleteUserSchema,
+  loginSchema,
+  logoutSchema
+} = require('../schema/schemas');
 
 async function router (fastify, options) {
   console.log(options);
-  fastify.post('/registerUser', (req, reply) => {  
-    const username = req.body.username;
-    const password = req.body.password;
-    utils.addUser(username, password);
-    reply.send({"message": 'User is registered successfully'});
+
+  fastify.route({
+    method: 'POST',
+    url: '/registerUser', 
+    schema: registerUserSchema,
+    handler: registerUser
   });
   
-  fastify.get('/users', (req, reply) => {
-    reply.send(utils.getUsers());
+  fastify.route({
+    method: 'GET',
+    url: '/users', 
+    schema: UsersSchema,
+    handler: users
   });
-  
-  fastify.delete('/delete/:username', (req, reply) => {
-    const username = req.params.username;
-    const user = utils.getUser(username);
-    utils.deleteUser(username);
-    if(user && user.length > 0 && user[0].identityProvider) {
-      utils.deactivateSession(user[0].identityProvider.idFromProvider);
-    }  
-    reply.send({"message":"User is deleted successfully"});
+
+  fastify.route({
+    method: 'DELETE',
+    url: '/delete/:username', 
+    schema: deleteUserSchema,
+    handler: deleteUser
   });
-  
-  fastify.post('/login', (req, reply) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    utils.login(username, password);
-    reply.send({"message": "User has logged in successfully"});
+
+  fastify.route({
+    method: 'POST',
+    url: '/login', 
+    schema: loginSchema,
+    handler: login
   });
-  
-  fastify.post('/logout', (req, reply) => {
-    const username = req.body.username;
-    utils.logout(username);
-    utils.deactivateSession(req.authUser.id);
-    reply.send({"message": "User has logged out successfully"});
+
+  fastify.route({
+    method: 'POST',
+    url: '/logout', 
+    schema: logoutSchema,
+    handler: logout
   });
 }
 

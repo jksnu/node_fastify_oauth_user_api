@@ -1,5 +1,8 @@
+'use strict';
+
 const fastify = require('fastify')({
-  logger: true
+  logger: true,
+  bodyLimit: 1024*1024*10 //10 mb body limit
 })
 const dotenv = require('dotenv');
 const path = require('path');
