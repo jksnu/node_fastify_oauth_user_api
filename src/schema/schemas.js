@@ -7,11 +7,12 @@ const registerUserSchema = {
   summary: 'User Registration',
   tags: ['User'],
   body: S.object()
+    .additionalProperties(false)
     .prop('username', S.string().required())
-    .prop('password', S.string().required())
-    .additionalProperties(false),
+    .prop('password', S.string().required()),
   response: {
     200: S.object()
+      .additionalProperties(false)
       .prop('message', S.string()),
     401: S.object().prop('message', S.string()),
   },
@@ -24,6 +25,7 @@ const UsersSchema = {
   response: {
     200: S.array().items(
       S.object()
+        .additionalProperties(false)
         .prop('username', S.string())
         .prop('password', S.string())
         .prop('loggedIn', S.boolean())
@@ -37,11 +39,12 @@ const deleteUserSchema = {
   summary: 'Delete User',
   tags: ['User'],
   params: S.object()
-    .prop('username', S.string().required())
-    .additionalProperties(false),
+    .additionalProperties(false)
+    .prop('username', S.string().required()),    
   response: {
     200: S.array().items(
       S.object()
+       .additionalProperties(false)
         .prop('username', S.string())
         .prop('password', S.string())
         .prop('loggedIn', S.boolean())
@@ -55,11 +58,12 @@ const loginSchema = {
   summary: 'User Login',
   tags: ['User'],
   body: S.object()
+    .additionalProperties(false)
     .prop('username', S.string().required())
-    .prop('password', S.string().required())
-    .additionalProperties(false),
+    .prop('password', S.string().required()),
   response: {
     200: S.object()
+      .additionalProperties(false)
       .prop('message', S.string()),
     401: S.object().prop('message', S.string()),
   },
@@ -69,11 +73,12 @@ const logoutSchema = {
   description: 'userLogout',
   summary: 'User Logout',
   tags: ['User'],
-  body: S.object()
-    .prop('username', S.string().required())
-    .additionalProperties(false),
+  body: S.object()    
+    .additionalProperties(false)
+    .prop('username', S.string().required()),
   response: {
     200: S.object()
+      .additionalProperties(false)
       .prop('message', S.string()),
     401: S.object().prop('message', S.string()),
   },
