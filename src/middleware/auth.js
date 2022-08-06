@@ -87,7 +87,7 @@ async function getPublicKeyByJose(req) {
     if(myCache.get("publicKey")) {
       return myCache.get("publicKey");
     }
-    const { data } = await axios.get('http://localhost:7000/jwks/', {
+    const { data } = await axios.get(process.env.OAUTH_JWKS_API, {
       headers: {
         'authorization': req.headers.authorization || "",
         'origin': req.headers.origin || "",

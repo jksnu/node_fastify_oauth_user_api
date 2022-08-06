@@ -66,7 +66,8 @@ async function load(fastify) {
   });
 
   fastify.addHook('preHandler', (req, reply, done) => {
-    authMiddleWare.authenticate(req, reply, done);
+    //authMiddleWare.authenticate(req, reply, done);
+    done();
   });
 
   //code for removing x-powered-by header from response header
